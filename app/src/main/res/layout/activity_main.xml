@@ -5,13 +5,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
         sothree:umanoPanelHeight="68dp"
-        sothree:umanoShadowHeight="4dp">
+        sothree:umanoShadowHeight="4dp"
+        sothree:umanoOverlay="true"
+        sothree:umanoDragView="@+id/dragView"
+        sothree:umanoScrollableView="@+id/list">
 
         <!-- MAIN CONTENT -->
 
@@ -50,16 +54,19 @@
                 android:id="@+id/bottomLayout"
                 android:layout_width="match_parent"
                 android:layout_height="68dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:background="@android:color/white"
+                >
 
                 <TextView
                     android:id="@+id/bottomText"
+                    android:textColor="@android:color/black"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center|left"
                     android:text="University of California Irvine"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
+                    android:textStyle="normal"
+                    android:textSize="19sp"
                     android:paddingLeft="15dp" />
 
                 <Button
@@ -76,18 +83,40 @@
 
             <ImageView
                 android:id="@+id/slidingImage"
-
-                android:paddingLeft="3dp"
-                android:paddingRight="3dp"
-                android:paddingBottom="3dp"
-
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="240dp"
                 android:scaleType="fitStart"
                 android:src="@drawable/aldrichpark">
             </ImageView>
 
+            <LinearLayout
+                android:id="@+id/small"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:orientation="horizontal"
+                android:background="@android:color/white"
+                >
+
+                <ImageButton
+                    android:id="@+id/ImageButton"
+                    android:src="@drawable/grapg11"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    />
+
+            </LinearLayout>
+
+
+            <!-- <ListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="270dp">
+
+            </ListView>-->
 
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
