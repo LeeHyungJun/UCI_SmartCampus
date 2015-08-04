@@ -3,6 +3,7 @@ package com.example.hjlee.map;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -22,12 +23,20 @@ import com.google.android.gms.maps.model.LatLng;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -51,7 +60,9 @@ import lecho.lib.hellocharts.view.ComboLineColumnChartView;
 import lecho.lib.hellocharts.view.LineChartView;
 
 public class informationActivity extends ActionBarActivity {
-    /** Called when the activity is first created. */
+    /**
+     * Called when the activity is first created.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -62,11 +73,16 @@ public class informationActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
         }
 
-
-
         Intent intent = getIntent();
         String text = intent.getStringExtra("text");
         Log.d("d", text);
+
+//////////////////////doinbackgraund excute///////////////////////
+
+        // Server Request URL
+        String serverURL="http://1-dot-servertest-1019.appspot.com/apis/sample/hello/name=insert";
+        // Create Object and call AsyncTask execute Method
+        new HttpTask().execute(serverURL);
 
 
     }//oncreate
@@ -108,21 +124,28 @@ public class informationActivity extends ActionBarActivity {
             int numValues = 360;
 
             Line line;
-            List<PointValue> values;
+           // List<PointValue> values;
             List<Line> lines = new ArrayList<Line>();
 
+
+            List<PointValue> values = new ArrayList<PointValue>();
+            values.add(new PointValue(0, 2));
+            values.add(new PointValue(3, 4));
+            values.add(new PointValue(1, 4));
+            values.add(new PointValue(2, 5));
+
             // Height line, add it as first line to be drawn in the background.
-            values = new ArrayList<PointValue>();
+            /*values = new ArrayList<PointValue>();
             for (int i = 0; i < numValues; ++i) {
                 // Some random height values, add +200 to make line a little more natural
 
-               ///////////////////////////////////////////////////////////////
+                ///////////////////////////////////////////////////////////////
                 float rawHeight = (float) (30);
                 //////////////////////////////////////////////////////////////////
 
                 float normalizedHeight = rawHeight * scale - sub;//   rawheight 300 = 10
-                values.add(new PointValue(i,normalizedHeight ));
-            }
+                values.add(new PointValue(i, normalizedHeight));
+            }*/
 
             line = new Line(values);
             line.setColor(Color.GRAY);
@@ -238,8 +261,67 @@ public class informationActivity extends ActionBarActivity {
         }
 
     }
+}
 
 
+class HttpTask extends AsyncTask<String, Void, String> {
 
 
+    String result = "";
+    InputStream inputStream = null;
+
+    protected void onPreExecute() {
+        //display progress dialog.
+        // NOTE: You can call UI Element here.
+    }
+
+    // Call after onPreExecute method
+    protected String doInBackground(String... urls) {
+        HttpResponse response = null;
+
+        try {
+            HttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet();
+            //"http://1-dot-servertest-1019.appspot.com/apis/sample/hello/name=insert"
+            request.setURI(new URI(urls[0]));
+            response = client.execute(request);
+            inputStream =response.getEntity().getContent();
+            result = convertStreamToString(inputStream);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
+    protected void onPostExecute(String result) {
+        Log.d("d", result);
+    }
+
+
+    public static String convertStreamToString(InputStream inputStream) throws IOException {
+        if (inputStream != null) {
+            Writer writer = new StringWriter();
+
+            char[] buffer = new char[1024];
+            try {
+                Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"),1024);
+                int n;
+                while ((n = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, n);
+                }
+            } finally {
+                inputStream.close();
+            }
+            return writer.toString();
+        } else {
+            return "";
+        }
+    }
 }
