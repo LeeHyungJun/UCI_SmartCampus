@@ -2,10 +2,15 @@ package com.example.hjlee.map;
 
 import android.app.Activity;
 import android.content.Intent;
+
+import java.util.ArrayList;
+
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +19,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +36,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,6 +50,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import lecho.lib.hellocharts.formatter.SimpleAxisValueFormatter;
@@ -59,15 +70,19 @@ import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.ComboLineColumnChartView;
 import lecho.lib.hellocharts.view.LineChartView;
 
-public class informationActivity extends ActionBarActivity {
+
+public class informationActivity extends FragmentActivity {
     /**
      * Called when the activity is first created.
      */
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.information);
+
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
@@ -77,34 +92,176 @@ public class informationActivity extends ActionBarActivity {
         String text = intent.getStringExtra("text");
         Log.d("d", text);
 
-//////////////////////doinbackgraund excute///////////////////////
-
-        // Server Request URL
-        String serverURL="http://1-dot-servertest-1019.appspot.com/apis/sample/hello/name=insert";
-        // Create Object and call AsyncTask execute Method
-        new HttpTask().execute(serverURL);
-
-
     }//oncreate
 
 
     public static class PlaceholderFragment extends Fragment {
 
+       // public ArrayList degreeArray = new ArrayList();
+       // public ArrayList azimuthArray = new ArrayList();
+
+        ArrayList<Float> degreeArray = new ArrayList<Float>();
+        ArrayList<Float> azimuthArray = new ArrayList<Float>();
+        ArrayList<Float> degreeArray_sunpath = new ArrayList<Float>();
+        ArrayList<Float> azimuthArray_sunpath = new ArrayList<Float>();
+
         private LineChartView chart;
         private LineChartData data;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public PlaceholderFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_tempo_chart, container, false);
 
+
+            //Log.d("testgggg123456", String.valueOf(azimuthArray.size()));
+
+            String serverURL = "http://1-dot-servertest-1019.appspot.com/apis/getdata/placename=ga";
+            new HttpTask().execute(serverURL);
+          //  SystemClock.sleep(7000);
+
+            View rootView = inflater.inflate(R.layout.fragment_tempo_chart, container, false);
             chart = (LineChartView) rootView.findViewById(R.id.chart);
 
-            generateTempoData();
 
             return rootView;
+        }
+
+        class HttpTask extends AsyncTask<String, Void, String> {
+            String result = "";
+            InputStream inputStream = null;
+
+            protected void onPreExecute() {
+                //display progress dialog.
+                // NOTE: You can call UI Element here.
+            }
+
+            // Call after onPreExecute method
+            protected String doInBackground(String... urls) {
+                HttpResponse response = null;
+
+                try {
+                    HttpClient client = new DefaultHttpClient();
+                    HttpGet request = new HttpGet();
+                    //"http://1-dot-servertest-1019.appspot.com/apis/sample/hello/name=insert"
+                    request.setURI(new URI(urls[0]));
+                    response = client.execute(request);
+                    inputStream = response.getEntity().getContent();
+                    result = convertStreamToString(inputStream);
+
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                } catch (ClientProtocolException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return result;
+            }
+
+
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
+
+                // Log.d("Weareresult", );
+
+                JSONObject object = null;
+                try {
+                    object = new JSONObject(result);
+                    Log.i("result", object.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                JSONArray Array_shadow = null;
+                JSONArray Array_sunpath = null;
+                try {
+                    Array_shadow = new JSONArray(object.getString("shadow"));
+                    Array_sunpath = new JSONArray(object.getString("sunpath"));
+                    //Sting a= new sting(Array.length());
+                    //Log.i("result2", object.getString("data"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                for (int i = 0; i < Array_shadow.length(); i++) {
+                    //Log.i("test", String.valueOf(i));
+
+                    JSONObject insideObject = null;
+                    try {
+                        insideObject = Array_shadow.getJSONObject(i);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    String degree = null;
+                    String azimuth = null;
+                    try {
+                        degree = insideObject.getString("degree");
+                        degreeArray.add(Float.parseFloat(degree));
+                        //Log.d("test", String.valueOf(degreeArray.get(i)));
+                        azimuth = insideObject.getString("azimuth");
+                        azimuthArray.add(Float.parseFloat(azimuth));
+                        // Log.d("test2", String.valueOf(azimuthArray.get(i)));
+                        //Log.d("testgggg123", String.valueOf(azimuthArray.size()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                for (int i = 0; i <  Array_sunpath.length(); i++) {
+                    //Log.i("test", String.valueOf(i));
+
+                    JSONObject insideObject_ = null;
+                    try {
+                        insideObject_ = Array_sunpath.getJSONObject(i);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    String degree_ = null;
+                    String azimuth_ = null;
+                    try {
+                        degree_ = insideObject_.getString("degree");
+                        degreeArray_sunpath.add(Float.parseFloat(degree_));
+                        Log.e("Sunpath test1", String.valueOf(degreeArray_sunpath.get(i)));
+                        azimuth_ = insideObject_.getString("azimuth");
+                        azimuthArray_sunpath.add(Float.parseFloat(azimuth_));
+                        Log.e("Sunpath test2", String.valueOf(azimuthArray_sunpath.get(i)));
+                        Log.e("Sunpath test3", String.valueOf(azimuthArray_sunpath.size()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+                generateTempoData();
+
+            }
+            public String convertStreamToString(InputStream inputStream) throws IOException {
+                if (inputStream != null) {
+                    Writer writer = new StringWriter();
+
+                    char[] buffer = new char[1024];
+                    try {
+                        Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"), 1024);
+                        int n;
+                        while ((n = reader.read(buffer)) != -1) {
+                            writer.write(buffer, 0, n);
+                        }
+                    } finally {
+                        inputStream.close();
+                    }
+                    return writer.toString();
+                } else {
+                    return "";
+                }
+            }
         }
 
         private void generateTempoData() {
@@ -127,26 +284,28 @@ public class informationActivity extends ActionBarActivity {
            // List<PointValue> values;
             List<Line> lines = new ArrayList<Line>();
 
-
             List<PointValue> values = new ArrayList<PointValue>();
-            values.add(new PointValue(0, 2));
-            values.add(new PointValue(3, 4));
-            values.add(new PointValue(1, 4));
-            values.add(new PointValue(2, 5));
+            //Log.d("testgggg", String.valueOf(azimuthArray.get(1)));
+            for(int i=0; i<azimuthArray.size(); ++i) {
+               // Log.d("test", String.valueOf(degreeArray.get(i)));
+               // Log.d("test2", String.valueOf(azimuthArray.get(i)));
+               // Log.d("d", String.valueOf(azimuthArray.get(i)));
+                values.add(new PointValue(azimuthArray.get(i), degreeArray.get(i)));
+            }
 
             // Height line, add it as first line to be drawn in the background.
-            /*values = new ArrayList<PointValue>();
+            /*****values = new ArrayList<PointValue>();
             for (int i = 0; i < numValues; ++i) {
                 // Some random height values, add +200 to make line a little more natural
 
                 ///////////////////////////////////////////////////////////////
-                float rawHeight = (float) (30);
+                float rawHeight = (float) (48);
                 //////////////////////////////////////////////////////////////////
 
                 float normalizedHeight = rawHeight * scale - sub;//   rawheight 300 = 10
                 values.add(new PointValue(i, normalizedHeight));
-            }*/
-
+            }
+***/
             line = new Line(values);
             line.setColor(Color.GRAY);
             line.setHasPoints(false);
@@ -158,15 +317,27 @@ public class informationActivity extends ActionBarActivity {
             // than 2min per km but the second should be higher on the chart. So you need to know max tempo and
             // tempoRange and set
             // chart values to minTempo - realTempo.
-            values = new ArrayList<PointValue>();
+
+           /* values = new ArrayList<PointValue>();
             for (int i = 0; i < numValues; ++i) {
                 // Some random raw tempo values.
-                float realTempo = (float) Math.random() * 6 + 2;
+                float realTempo = (float) 76;
                 float revertedTempo = tempoRange - realTempo;
                 values.add(new PointValue(i, revertedTempo));
+            }*/
+
+            List<PointValue> values_ = new ArrayList<PointValue>();
+            //Log.d("testgggg", String.valueOf(azimuthArray.get(1)));
+            for(int i=0; i<azimuthArray_sunpath.size(); ++i) {
+                //Log.d("test", String.valueOf(degreeArray_sunpath.get(i)));
+               // Log.d("test2", String.valueOf(azimuthArray_sunpath.get(i)));
+               // Log.d("d", String.valueOf(azimuthArray_sunpath.get(i)));
+                values_.add(new PointValue(azimuthArray_sunpath.get(i), degreeArray_sunpath.get(i)));
             }
 
-            line = new Line(values);
+
+
+            line = new Line(values_);
             line.setColor(ChartUtils.COLOR_RED);
             line.setHasPoints(false);
             line.setStrokeWidth(1);
@@ -181,7 +352,7 @@ public class informationActivity extends ActionBarActivity {
             // value.
             Axis distanceAxis = new Axis();
             distanceAxis.setName("Azimuth");
-            distanceAxis.setTextColor(ChartUtils.COLOR_ORANGE);
+            distanceAxis.setTextColor(Color.BLACK);
             distanceAxis.setMaxLabelChars(3);
             distanceAxis.setFormatter(new SimpleAxisValueFormatter().setAppendedText(".".toCharArray()));
             distanceAxis.setHasLines(true);
@@ -200,13 +371,14 @@ public class informationActivity extends ActionBarActivity {
 
             Axis tempoAxis = new Axis(axisValues).setName("height").setHasLines(true).setMaxLabelChars(4)
                     .setTextColor(ChartUtils.COLOR_RED);*/
-            data.setAxisYLeft(new Axis().setName("height").setMaxLabelChars(4)
+            data.setAxisYLeft(new Axis().setName("Elevation").setMaxLabelChars(4).setTextColor(Color.BLACK)
                     .setFormatter(new HeightValueFormatter(scale, sub, 0)));
+
 
             // *** Same as in Speed/Height chart.
             // Height axis, this axis need custom formatter that will translate values back to real height values.
-            data.setAxisYRight(new Axis().setName("Height [m]").setMaxLabelChars(3)
-                    .setFormatter(new HeightValueFormatter(scale, sub, 0)));
+            //  data.setAxisYRight(new Axis().setName("Height [m]").setMaxLabelChars(3)
+            //   .setFormatter(new HeightValueFormatter(scale, sub, 0)));
 
             // Set data
             chart.setLineChartData(data);
@@ -264,64 +436,3 @@ public class informationActivity extends ActionBarActivity {
 }
 
 
-class HttpTask extends AsyncTask<String, Void, String> {
-
-
-    String result = "";
-    InputStream inputStream = null;
-
-    protected void onPreExecute() {
-        //display progress dialog.
-        // NOTE: You can call UI Element here.
-    }
-
-    // Call after onPreExecute method
-    protected String doInBackground(String... urls) {
-        HttpResponse response = null;
-
-        try {
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet();
-            //"http://1-dot-servertest-1019.appspot.com/apis/sample/hello/name=insert"
-            request.setURI(new URI(urls[0]));
-            response = client.execute(request);
-            inputStream =response.getEntity().getContent();
-            result = convertStreamToString(inputStream);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-
-    protected void onPostExecute(String result) {
-        Log.d("d", result);
-    }
-
-
-    public static String convertStreamToString(InputStream inputStream) throws IOException {
-        if (inputStream != null) {
-            Writer writer = new StringWriter();
-
-            char[] buffer = new char[1024];
-            try {
-                Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"),1024);
-                int n;
-                while ((n = reader.read(buffer)) != -1) {
-                    writer.write(buffer, 0, n);
-                }
-            } finally {
-                inputStream.close();
-            }
-            return writer.toString();
-        } else {
-            return "";
-        }
-    }
-}

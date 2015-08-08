@@ -54,8 +54,11 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         setUpMapIfNeeded();
+
+
 
        /* ArrayAdapter<String> Adapter;
         Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrlist);
