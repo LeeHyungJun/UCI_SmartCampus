@@ -5,28 +5,26 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.sothree.slidinguppanel.SlidingUpPanelLayout
-        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:sothree="http://schemas.android.com/apk/res-auto"
         android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="bottom"
-        sothree:umanoPanelHeight="68dp"
-        sothree:umanoShadowHeight="4dp"
-        sothree:umanoOverlay="true"
         sothree:umanoDragView="@+id/dragView"
-        sothree:umanoScrollableView="@+id/list">
+        sothree:umanoOverlay="true"
+        sothree:umanoPanelHeight="68dp"
+        sothree:umanoScrollableView="@+id/list"
+        sothree:umanoShadowHeight="4dp">
 
         <!-- MAIN CONTENT -->
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:map="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/map"
-            tools:context=".MapsActivity"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
             map:cameraBearing="220.5"
             map:cameraTargetLat="33.646823"
             map:cameraTargetLng="-117.841899"
@@ -37,7 +35,8 @@
             map:uiRotateGestures="true"
             map:uiTiltGestures="true"
             map:uiZoomControls="false"
-            map:uiZoomGestures="true"/>
+            map:uiZoomGestures="true"
+            tools:context=".MapsActivity" />
 
 
         <!-- SLIDING LAYOUT -->
@@ -54,30 +53,29 @@
                 android:id="@+id/bottomLayout"
                 android:layout_width="match_parent"
                 android:layout_height="68dp"
-                android:orientation="horizontal"
                 android:background="@android:color/white"
-                >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/bottomText"
-                    android:textColor="@android:color/black"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center|left"
+                    android:paddingLeft="15dp"
                     android:text="University of California Irvine"
-                    android:textStyle="normal"
+                    android:textColor="@android:color/black"
                     android:textSize="19sp"
-                    android:paddingLeft="15dp" />
+                    android:textStyle="normal" />
 
                 <Button
-                    android:visibility="gone"
                     android:id="@+id/follow"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical|right"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -86,37 +84,66 @@
                 android:layout_width="wrap_content"
                 android:layout_height="240dp"
                 android:scaleType="fitStart"
-                android:src="@drawable/aldrichpark">
-            </ImageView>
+                android:src="@drawable/aldrichpark"></ImageView>
 
             <LinearLayout
-                android:id="@+id/small"
-                android:layout_width="140dp"
+                android:id="@+id/mid"
+                android:layout_width="match_parent"
                 android:layout_height="140dp"
-                android:orientation="horizontal"
                 android:background="@android:color/white"
-                >
+                android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/ImageButton"
-                    android:src="@drawable/grapg11"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="20dp"
-                    android:layout_weight="1"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    />
+                <LinearLayout
+                    android:id="@+id/small"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_marginLeft="23dp"
+                    android:layout_marginRight="19dp"
+                    android:background="@android:color/white"
+                    android:orientation="horizontal">
 
+                    <ImageButton
+                        android:id="@+id/ImageButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/my_custom_selector" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/small2"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_marginLeft="19dp"
+                    android:layout_marginRight="23dp"
+                    android:background="@android:color/white"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/ImageButton2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:background="@null"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/my_custom_selector2" />
+                </LinearLayout>
+            </LinearLayout>
+            >
+
+
+            <LinearLayout
+                android:id="@+id/bottom"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                android:orientation="horizontal">
             </LinearLayout>
 
-
-            <!-- <ListView
-                android:id="@+id/list"
-                android:layout_width="match_parent"
-                android:layout_height="270dp">
-
-            </ListView>-->
 
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>

@@ -72,24 +72,21 @@ import lecho.lib.hellocharts.view.LineChartView;
 
 
 public class informationActivity extends FragmentActivity {
-    /**
-     * Called when the activity is first created.
-     */
 
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+            @Override
+            public void onCreate(Bundle savedInstanceState) {
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.information);
+                super.onCreate(savedInstanceState);
+                setContentView(R.layout.information);
 
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
-        }
+                if (savedInstanceState == null) {
+                    getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
+                }
 
-        Intent intent = getIntent();
-        String text = intent.getStringExtra("text");
+                Intent intent = getIntent();
+                String text = intent.getStringExtra("text");
         Log.d("d", text);
 
     }//oncreate
@@ -100,10 +97,10 @@ public class informationActivity extends FragmentActivity {
        // public ArrayList degreeArray = new ArrayList();
        // public ArrayList azimuthArray = new ArrayList();
 
-        ArrayList<Float> degreeArray = new ArrayList<Float>();
-        ArrayList<Float> azimuthArray = new ArrayList<Float>();
-        ArrayList<Float> degreeArray_sunpath = new ArrayList<Float>();
-        ArrayList<Float> azimuthArray_sunpath = new ArrayList<Float>();
+        ArrayList<Float> shadow_degreeArray = new ArrayList<Float>();
+        ArrayList<Float> shadow_azimuthArray = new ArrayList<Float>();
+        ArrayList<Float> sunpath_degreeArray = new ArrayList<Float>();
+        ArrayList<Float> sunpath_azimuthArray = new ArrayList<Float>();
 
         private LineChartView chart;
         private LineChartData data;
@@ -117,15 +114,11 @@ public class informationActivity extends FragmentActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
-            //Log.d("testgggg123456", String.valueOf(azimuthArray.size()));
-
             String serverURL = "http://1-dot-servertest-1019.appspot.com/apis/getdata/placename=ga";
             new HttpTask().execute(serverURL);
-          //  SystemClock.sleep(7000);
 
             View rootView = inflater.inflate(R.layout.fragment_tempo_chart, container, false);
             chart = (LineChartView) rootView.findViewById(R.id.chart);
-
 
             return rootView;
         }
@@ -168,7 +161,6 @@ public class informationActivity extends FragmentActivity {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
 
-                // Log.d("Weareresult", );
 
                 JSONObject object = null;
                 try {
@@ -188,7 +180,7 @@ public class informationActivity extends FragmentActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+///////////////shadow data////////////////////////////////////////////////////////
                 for (int i = 0; i < Array_shadow.length(); i++) {
                     //Log.i("test", String.valueOf(i));
 
@@ -203,17 +195,16 @@ public class informationActivity extends FragmentActivity {
                     String azimuth = null;
                     try {
                         degree = insideObject.getString("degree");
-                        degreeArray.add(Float.parseFloat(degree));
-                        //Log.d("test", String.valueOf(degreeArray.get(i)));
+                        shadow_degreeArray.add(Float.parseFloat(degree));
+                        Log.e("test", String.valueOf(shadow_degreeArray.get(i)));
                         azimuth = insideObject.getString("azimuth");
-                        azimuthArray.add(Float.parseFloat(azimuth));
-                        // Log.d("test2", String.valueOf(azimuthArray.get(i)));
-                        //Log.d("testgggg123", String.valueOf(azimuthArray.size()));
+                        shadow_azimuthArray.add(Float.parseFloat(azimuth));
+                        Log.e("test2", String.valueOf(shadow_azimuthArray.get(i)));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-
+///////////////////////////////sunpath data//////////////////////////////////////////////
                 for (int i = 0; i <  Array_sunpath.length(); i++) {
                     //Log.i("test", String.valueOf(i));
 
@@ -228,21 +219,19 @@ public class informationActivity extends FragmentActivity {
                     String azimuth_ = null;
                     try {
                         degree_ = insideObject_.getString("degree");
-                        degreeArray_sunpath.add(Float.parseFloat(degree_));
-                        Log.e("Sunpath test1", String.valueOf(degreeArray_sunpath.get(i)));
+                        sunpath_degreeArray.add(Float.parseFloat(degree_));
+                        Log.e("Sunpath test1", String.valueOf(sunpath_degreeArray.get(i)));
+
                         azimuth_ = insideObject_.getString("azimuth");
-                        azimuthArray_sunpath.add(Float.parseFloat(azimuth_));
-                        Log.e("Sunpath test2", String.valueOf(azimuthArray_sunpath.get(i)));
-                        Log.e("Sunpath test3", String.valueOf(azimuthArray_sunpath.size()));
+                        sunpath_azimuthArray.add(Float.parseFloat(azimuth_));
+                        Log.e("Sunpath test2", String.valueOf(sunpath_azimuthArray.get(i)));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-
-
                 generateTempoData();
-
             }
+
             public String convertStreamToString(InputStream inputStream) throws IOException {
                 if (inputStream != null) {
                     Writer writer = new StringWriter();
@@ -263,13 +252,9 @@ public class informationActivity extends FragmentActivity {
                 }
             }
         }
-
+//////////////////////////////////////////////////////////////////////////
         private void generateTempoData() {
-            // I got speed in range (0-50) and height in meters in range(200 - 300). I want this chart to display both
-            // information. Differences between speed and height values are large and chart doesn't look good so I need
-            // to modify height values to be in range of speed values.
 
-            // The same for displaying Tempo/Height chart.
 
             float minHeight = 0;
             float maxHeight = 90;
@@ -278,7 +263,7 @@ public class informationActivity extends FragmentActivity {
             float scale = tempoRange / maxHeight;//   0.05
             float sub = (minHeight * scale) / 2;//    10/2
 
-            int numValues = 360;
+            int numValues = 24;
 
             Line line;
            // List<PointValue> values;
@@ -286,32 +271,21 @@ public class informationActivity extends FragmentActivity {
 
             List<PointValue> values = new ArrayList<PointValue>();
             //Log.d("testgggg", String.valueOf(azimuthArray.get(1)));
-            for(int i=0; i<azimuthArray.size(); ++i) {
+            for(int i=0; i<shadow_azimuthArray.size(); ++i) {
                // Log.d("test", String.valueOf(degreeArray.get(i)));
                // Log.d("test2", String.valueOf(azimuthArray.get(i)));
                // Log.d("d", String.valueOf(azimuthArray.get(i)));
-                values.add(new PointValue(azimuthArray.get(i), degreeArray.get(i)));
+                values.add(new PointValue(shadow_azimuthArray.get(i), shadow_degreeArray.get(i)));
             }
 
-            // Height line, add it as first line to be drawn in the background.
-            /*****values = new ArrayList<PointValue>();
-            for (int i = 0; i < numValues; ++i) {
-                // Some random height values, add +200 to make line a little more natural
-
-                ///////////////////////////////////////////////////////////////
-                float rawHeight = (float) (48);
-                //////////////////////////////////////////////////////////////////
-
-                float normalizedHeight = rawHeight * scale - sub;//   rawheight 300 = 10
-                values.add(new PointValue(i, normalizedHeight));
-            }
-***/
             line = new Line(values);
             line.setColor(Color.GRAY);
             line.setHasPoints(false);
             line.setFilled(true);
             line.setStrokeWidth(1);
             lines.add(line);
+
+
 
             // Tempo line is a little tricky because worse tempo means bigger value for example 11min per km is worse
             // than 2min per km but the second should be higher on the chart. So you need to know max tempo and
@@ -328,11 +302,11 @@ public class informationActivity extends FragmentActivity {
 
             List<PointValue> values_ = new ArrayList<PointValue>();
             //Log.d("testgggg", String.valueOf(azimuthArray.get(1)));
-            for(int i=0; i<azimuthArray_sunpath.size(); ++i) {
+            for(int i=0; i<sunpath_azimuthArray.size(); ++i) {
                 //Log.d("test", String.valueOf(degreeArray_sunpath.get(i)));
                // Log.d("test2", String.valueOf(azimuthArray_sunpath.get(i)));
                // Log.d("d", String.valueOf(azimuthArray_sunpath.get(i)));
-                values_.add(new PointValue(azimuthArray_sunpath.get(i), degreeArray_sunpath.get(i)));
+                values_.add(new PointValue(sunpath_azimuthArray.get(i), sunpath_degreeArray.get(i)));
             }
 
 

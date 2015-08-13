@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -41,6 +43,16 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
     static final LatLng aircterrace = new LatLng(33.646161, -117.840576);
     static final LatLng library = new LatLng(33.647261, -117.841328);
 
+    Marker baby_Of_Position_a;
+    Marker baby_Of_Position_b;
+    Marker baby_Of_Position_c;
+    Marker baby_Of_Position_d;
+    Marker baby_Of_Position_e;
+    Marker a,b,c,d,e,f,g,h,i,j;
+
+    CircleOptions circle = new CircleOptions();
+
+
     public String[] arrlist ={
             "second",
             "2",
@@ -49,6 +61,7 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
     };
     private Circle mCircle;
     private Marker mMarker;
+
     public Circle mapCircle;
 
     @Override
@@ -59,7 +72,6 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
         setUpMapIfNeeded();
 
 
-
        /* ArrayAdapter<String> Adapter;
         Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arrlist);
 
@@ -68,16 +80,18 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
 
         list.setOnItemClickListener(this);*/
 
-        Marker a = mMap.addMarker(new MarkerOptions().position(universityartgallery).title("University Art Gallery").alpha(0.7f));
-        Marker b = mMap.addMarker(new MarkerOptions().position(javacity).title("Java City").alpha(0.7f));
-        Marker c = mMap.addMarker(new MarkerOptions().position(busstop).title("Bus Stop").alpha(0.7f));
-        Marker d = mMap.addMarker(new MarkerOptions().position(foodcourt).title("Food Court").alpha(0.7f));
-        Marker e = mMap.addMarker(new MarkerOptions().position(starbucks).title("Star Bucks").alpha(0.7f));
-        Marker f = mMap.addMarker(new MarkerOptions().position(musicmediabldg).title("Music Medical Bldg").alpha(0.7f));
-        Marker g = mMap.addMarker(new MarkerOptions().position(aldrichpark).title("Aldrich Park").alpha(0.7f));
-        Marker h = mMap.addMarker(new MarkerOptions().position(frederickreineshall).title("Frederick Reines Hall").alpha(0.7f));
-        Marker i = mMap.addMarker(new MarkerOptions().position(aircterrace).title("AIRC Terrace").alpha(0.7f));
-        Marker j = mMap.addMarker(new MarkerOptions().position(library).title("Library").alpha(0.7f));
+        a = mMap.addMarker(new MarkerOptions().position(universityartgallery).title("University Art Gallery").alpha(0.7f));
+        b = mMap.addMarker(new MarkerOptions().position(javacity).title("Java City").alpha(0.7f));
+        c = mMap.addMarker(new MarkerOptions().position(busstop).title("Bus Stop").alpha(0.7f));
+        d = mMap.addMarker(new MarkerOptions().position(foodcourt).title("Food Court").alpha(0.7f));
+        e = mMap.addMarker(new MarkerOptions().position(starbucks).title("Star Bucks").alpha(0.7f));
+        f = mMap.addMarker(new MarkerOptions().position(musicmediabldg).title("Music Medical Bldg").alpha(0.7f));
+        g = mMap.addMarker(new MarkerOptions().position(aldrichpark).title("Aldrich Park").alpha(0.7f));
+        h = mMap.addMarker(new MarkerOptions().position(frederickreineshall).title("Frederick Reines Hall").alpha(0.7f));
+        i = mMap.addMarker(new MarkerOptions().position(aircterrace).title("AIRC Terrace").alpha(0.7f));
+        j = mMap.addMarker(new MarkerOptions().position(library).title("Library").alpha(0.7f));
+
+
 
         /*mMap.addCircle(new CircleOptions()
                 .center(new LatLng(universityartgallery.latitude, universityartgallery.longitude))
@@ -85,6 +99,27 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
                 .strokeColor(Color.rgb(238, 213, 210))
                 .fillColor(Color.argb(200, 238, 213, 210)));*/
 
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+            @Override
+            public void onMapClick(LatLng arg0) {
+                // TODO Auto-generated method stub
+                Log.d("arg0", arg0.latitude + "-" + arg0.longitude);
+                Log.d("arg0", "no point");
+                if(baby_Of_Position_a!=null){
+                    baby_Of_Position_a.remove();
+                    baby_Of_Position_b.remove();
+                    baby_Of_Position_c.remove();
+                    baby_Of_Position_d.remove();
+                    baby_Of_Position_e.remove();
+
+                    if (mapCircle != null) {
+                        mapCircle.remove();
+                    }
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(arg0, 17));
+                }
+            }
+        });
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             public boolean onMarkerClick(Marker arg0) {
@@ -101,60 +136,87 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
                 myText.setTextColor(Color.DKGRAY);
                 bottom_layout.setBackgroundColor(Color.WHITE);
 
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(arg0.getPosition(), 17));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(arg0.getPosition(), 19));
 
 
-                CircleOptions circle = new CircleOptions();
-                circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+
                 circle.strokeColor(Color.rgb(255, 102, 102));
                 circle.strokeWidth(2f);
                 circle.fillColor(Color.argb(100, 255, 102, 102));
                 circle.radius(25);
 
-
                 if (mapCircle != null) {
                     mapCircle.remove();
                 }
 
-                mapCircle = mMap.addCircle(circle);
+               // mapCircle = mMap.addCircle(circle);
 
 
                 if (arg0.getPosition().equals(universityartgallery)) {
                     image.setImageResource(R.drawable.universityartgallery);
 
+
+
                     return true;
                 } else if (arg0.getPosition().equals(javacity)) {
                     image.setImageResource(R.drawable.javacity);
+
+                    circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+                    baby_Of_Position_a = mMap.addMarker(new MarkerOptions().position(new LatLng(33.643373, -117.841126)).title("Java City1").alpha(0.7f).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    baby_Of_Position_b = mMap.addMarker(new MarkerOptions().position(new LatLng(33.643462, -117.841268)).title("Java City2").alpha(0.7f).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    baby_Of_Position_c = mMap.addMarker(new MarkerOptions().position(new LatLng(33.643587, -117.841163)).title("Java City3").alpha(0.7f).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    baby_Of_Position_d = mMap.addMarker(new MarkerOptions().position(new LatLng(33.643520, -117.841077)).title("Java City4").alpha(0.7f).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    baby_Of_Position_e = mMap.addMarker(new MarkerOptions().position(new LatLng(33.643413, -117.841080)).title("Java City5").alpha(0.7f).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+                    mapCircle = mMap.addCircle(circle);
                     return true;
                 } else if (arg0.getPosition().equals(busstop)) {
                     image.setImageResource(R.drawable.busstop);
+                    circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+                    mapCircle = mMap.addCircle(circle);
                     return true;
                 } else if (arg0.getPosition().equals(foodcourt)) {
                     image.setImageResource(R.drawable.foodcourt);
+                    circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+                    mapCircle = mMap.addCircle(circle);
                     return true;
                 } else if (arg0.getPosition().equals(starbucks)) {
                     image.setImageResource(R.drawable.starbucks);
+                    circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+                    mapCircle = mMap.addCircle(circle);
                     return true;
                 } else if (arg0.getPosition().equals(musicmediabldg)) {
                     image.setImageResource(R.drawable.musicmediabldg);
+                    circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+                    mapCircle = mMap.addCircle(circle);
                     return true;
                 } else if (arg0.getPosition().equals(aldrichpark)) {
                     image.setImageResource(R.drawable.aldrichpark);
+                    circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+                    mapCircle = mMap.addCircle(circle);
                     return true;
                 } else if (arg0.getPosition().equals(frederickreineshall)) {
                     image.setImageResource(R.drawable.frederickreineshall);
+                    circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+                    mapCircle = mMap.addCircle(circle);
                     return true;
                 } else if (arg0.getPosition().equals(aircterrace)) {
                     image.setImageResource(R.drawable.aircterrace);
+                    circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+                    mapCircle = mMap.addCircle(circle);
                     return true;
                 } else if (arg0.getPosition().equals(library)) {
                     image.setImageResource(R.drawable.library);
+                    circle.center(new LatLng(arg0.getPosition().latitude, arg0.getPosition().longitude));
+                    mapCircle = mMap.addCircle(circle);
                     return true;
                 } else {
                     return false;
                 }
             }
         });
+
+
 
         final LinearLayout b2 = (LinearLayout) findViewById(R.id.whole);
         final LinearLayout b1 = (LinearLayout) findViewById(R.id.bottomLayout);
@@ -178,8 +240,22 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
         });
 
 
-        ImageButton mainButton = (ImageButton) findViewById(R.id.ImageButton);
-        mainButton.setOnClickListener(new View.OnClickListener() {
+        ImageButton shadow_graph_Button = (ImageButton) findViewById(R.id.ImageButton);
+       // shadow_graph_Button.setBackgroundDrawable(null);
+        shadow_graph_Button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(MapsActivity.this, informationActivity.class);
+                intent.putExtra("text", position);
+                startActivity(intent);
+
+            }
+        });
+
+       /* ImageButton power_graph_Button = (ImageButton) findViewById(R.id.ImageButton2);
+        power_graph_Button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -188,7 +264,7 @@ public class MapsActivity extends FragmentActivity implements AdapterView.OnItem
                 startActivity(intent);
 
             }
-        });
+        });*/
 
 
     }

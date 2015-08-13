@@ -1,7 +1,27 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+<LinearLayout
+    android:id="@+id/graphWhole"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="lecho.lib.hellocharts.samples.TempoChartActivity"
-    tools:ignore="MergeRootFrame" />
+    android:background="#ffffff"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="lecho.lib.hellocharts.samples.TempoChartActivity"
+        tools:ignore="MergeRootFrame" />
+
+    <TextView
+        android:id="@+id/graphText"
+        android:textColor="@android:color/black"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:gravity="center|left"
+        android:text="Unive"
+        android:textStyle="normal"
+        android:textSize="25sp" />
+
+</LinearLayout>
