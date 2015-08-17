@@ -73,6 +73,7 @@ import lecho.lib.hellocharts.view.LineChartView;
 
 public class informationActivity extends FragmentActivity {
 
+    static String text;
 
             @Override
             public void onCreate(Bundle savedInstanceState) {
@@ -86,8 +87,10 @@ public class informationActivity extends FragmentActivity {
                 }
 
                 Intent intent = getIntent();
-                String text = intent.getStringExtra("text");
-        Log.d("d", text);
+                text = intent.getStringExtra("text");
+                Log.d("d", text);
+                Log.d("d", text);
+                Log.d("d", text);
 
     }//oncreate
 
@@ -114,7 +117,8 @@ public class informationActivity extends FragmentActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 
-            String serverURL = "http://1-dot-servertest-1019.appspot.com/apis/getdata/placename=ga";
+            String serverURL = "http://1-dot-servertest-1019.appspot.c" +
+                    "om/apis/getdata/placename="+text;
             new HttpTask().execute(serverURL);
 
             View rootView = inflater.inflate(R.layout.fragment_tempo_chart, container, false);
@@ -170,15 +174,41 @@ public class informationActivity extends FragmentActivity {
                     e.printStackTrace();
                 }
 
+                JSONArray Array_time = null;
                 JSONArray Array_shadow = null;
                 JSONArray Array_sunpath = null;
                 try {
+                    Array_time =new JSONArray(object.getString("time"));
                     Array_shadow = new JSONArray(object.getString("shadow"));
                     Array_sunpath = new JSONArray(object.getString("sunpath"));
                     //Sting a= new sting(Array.length());
                     //Log.i("result2", object.getString("data"));
                 } catch (JSONException e) {
                     e.printStackTrace();
+                }
+///////////////////////////////time////////////////////////////////////////////////////
+                for (int i = 0; i < Array_time.length(); i++) {
+                    //Log.i("test", String.valueOf(i));
+
+                    JSONObject insideObject__ = null;
+                    try {
+                        insideObject__ = Array_time.getJSONObject(i);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    String fullsun = null;
+                    String shadow = null;
+                    try {
+                        fullsun = insideObject__.getString("fullsun");
+                        //shadow_degreeArray.add(Float.parseFloat(degree));
+                        Log.e("test", fullsun);
+                        shadow = insideObject__.getString("shadow");
+                        //shadow_azimuthArray.add(Float.parseFloat(azimuth));
+                        Log.e("test2", shadow);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 ///////////////shadow data////////////////////////////////////////////////////////
                 for (int i = 0; i < Array_shadow.length(); i++) {
@@ -196,10 +226,10 @@ public class informationActivity extends FragmentActivity {
                     try {
                         degree = insideObject.getString("degree");
                         shadow_degreeArray.add(Float.parseFloat(degree));
-                        Log.e("test", String.valueOf(shadow_degreeArray.get(i)));
+                       // Log.e("test", String.valueOf(shadow_degreeArray.get(i)));
                         azimuth = insideObject.getString("azimuth");
                         shadow_azimuthArray.add(Float.parseFloat(azimuth));
-                        Log.e("test2", String.valueOf(shadow_azimuthArray.get(i)));
+                       // Log.e("test2", String.valueOf(shadow_azimuthArray.get(i)));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -220,11 +250,11 @@ public class informationActivity extends FragmentActivity {
                     try {
                         degree_ = insideObject_.getString("degree");
                         sunpath_degreeArray.add(Float.parseFloat(degree_));
-                        Log.e("Sunpath test1", String.valueOf(sunpath_degreeArray.get(i)));
+                       // Log.e("Sunpath test1", String.valueOf(sunpath_degreeArray.get(i)));
 
                         azimuth_ = insideObject_.getString("azimuth");
                         sunpath_azimuthArray.add(Float.parseFloat(azimuth_));
-                        Log.e("Sunpath test2", String.valueOf(sunpath_azimuthArray.get(i)));
+                       // Log.e("Sunpath test2", String.valueOf(sunpath_azimuthArray.get(i)));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

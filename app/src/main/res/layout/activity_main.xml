@@ -25,9 +25,9 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            map:cameraBearing="220.5"
-            map:cameraTargetLat="33.646823"
-            map:cameraTargetLng="-117.841899"
+            map:cameraBearing="10.5"
+            map:cameraTargetLat="33.645216"
+            map:cameraTargetLng="-117.842719"
             map:cameraTilt="30"
             map:cameraZoom="17"
             map:mapType="normal"
@@ -141,7 +141,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/white"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:weightSum="100">
+                <TextView
+                    android:id="@+id/energyText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="30"
+                    android:gravity="center|left"
+                    android:paddingLeft="15dp"
+                    android:text="University of California Irvine"
+                    android:textColor="@android:color/black"
+                    android:textSize="19sp"
+                    android:textStyle="normal" />
+                <TextView
+                    android:id="@+id/shadowText"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="30"
+                    android:gravity="center|left"
+                    android:paddingLeft="15dp"
+                    android:text="University of California Irvine"
+                    android:textColor="@android:color/black"
+                    android:textSize="19sp"
+                    android:textStyle="normal" />
             </LinearLayout>
 
 
