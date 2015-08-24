@@ -50,6 +50,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -73,6 +74,13 @@ import lecho.lib.hellocharts.view.LineChartView;
 
 public class informationActivity extends FragmentActivity {
 
+
+    TextView shadow_Graph_Top_Title;
+    TextView shadow_Graph_sun_time_info;
+    TextView shadow_Graph_shadow_time_info;
+
+    String fullsun_time_ = null;
+    String shadow_time_ = null;
     static String text;
 
             @Override
@@ -80,7 +88,6 @@ public class informationActivity extends FragmentActivity {
 
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.information);
-
 
                 if (savedInstanceState == null) {
                     getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
@@ -92,23 +99,42 @@ public class informationActivity extends FragmentActivity {
                 Log.d("d", text);
                 Log.d("d", text);
 
+
+                shadow_Graph_Top_Title=(TextView) findViewById(R.id.shadow_Graph_Top_Title);
+                shadow_Graph_Top_Title.setText(text);
+
+
+
+
     }//oncreate
 
 
-    public static class PlaceholderFragment extends Fragment {
+    public class PlaceholderFragment extends Fragment {
 
        // public ArrayList degreeArray = new ArrayList();
        // public ArrayList azimuthArray = new ArrayList();
+
+        String fullsun_time = null;
+        String shadow_time = null;
+
+        String fullsun_azimuth = null;
+        String shadow_azimuth = null;
 
         ArrayList<Float> shadow_degreeArray = new ArrayList<Float>();
         ArrayList<Float> shadow_azimuthArray = new ArrayList<Float>();
         ArrayList<Float> sunpath_degreeArray = new ArrayList<Float>();
         ArrayList<Float> sunpath_azimuthArray = new ArrayList<Float>();
 
+
+
         private LineChartView chart;
         private LineChartData data;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
         public PlaceholderFragment() {
         }
@@ -116,9 +142,17 @@ public class informationActivity extends FragmentActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+            Calendar c = Calendar.getInstance();
+            int hours = c.get(Calendar.HOUR_OF_DAY);
+            int minutes = c.get(Calendar.MINUTE);
+            String time = String.valueOf(hours)+String.valueOf(minutes);
 
-            String serverURL = "http://1-dot-servertest-1019.appspot.c" +
-                    "om/apis/getdata/placename="+text;
+            Log.e("current time", time);
+
+            String serverURL = "http://1-dot-servertest-1019.appspot.com/apis/getdata/placename="+text+"/time="+time;
+
+            //String serverURLTime="http://1-dot-servertest-1019.appspot.com/apis/getinfo/placename="+text+"/time="+time;
+
             new HttpTask().execute(serverURL);
 
             View rootView = inflater.inflate(R.layout.fragment_tempo_chart, container, false);
@@ -169,7 +203,7 @@ public class informationActivity extends FragmentActivity {
                 JSONObject object = null;
                 try {
                     object = new JSONObject(result);
-                    Log.i("result", object.toString());
+                    //Log.i("result", object.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -197,15 +231,20 @@ public class informationActivity extends FragmentActivity {
                         e.printStackTrace();
                     }
 
-                    String fullsun = null;
-                    String shadow = null;
                     try {
-                        fullsun = insideObject__.getString("fullsun");
+                        fullsun_time = insideObject__.getString("fullsun");
                         //shadow_degreeArray.add(Float.parseFloat(degree));
-                        Log.e("test", fullsun);
-                        shadow = insideObject__.getString("shadow");
+                        Log.e("fullsun", fullsun_time);
+
+                        fullsun_azimuth = insideObject__.getString("fullsun_azimuth");
+                        shadow_azimuth = insideObject__.getString("shadow_azimuth");
+                        Log.e("fullsunazimuth", fullsun_azimuth);
+                        //Log.e("fullsunazimuth", fullsun_azimuth);
+                        //Log.e("fullsunazimuth", fullsun_azimuth);
+                         Log.e("fullsunazimuth", shadow_azimuth);
+                        shadow_time = insideObject__.getString("shadow");
                         //shadow_azimuthArray.add(Float.parseFloat(azimuth));
-                        Log.e("test2", shadow);
+                        Log.e("shadow", shadow_time);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -250,7 +289,7 @@ public class informationActivity extends FragmentActivity {
                     try {
                         degree_ = insideObject_.getString("degree");
                         sunpath_degreeArray.add(Float.parseFloat(degree_));
-                       // Log.e("Sunpath test1", String.valueOf(sunpath_degreeArray.get(i)));
+                        Log.e("Sunpath Degree data:", String.valueOf(sunpath_degreeArray.get(i)));
 
                         azimuth_ = insideObject_.getString("azimuth");
                         sunpath_azimuthArray.add(Float.parseFloat(azimuth_));
@@ -259,7 +298,16 @@ public class informationActivity extends FragmentActivity {
                         e.printStackTrace();
                     }
                 }
+
+
+
                 generateTempoData();
+                shadow_Graph_sun_time_info=(TextView) findViewById(R.id. shadow_Graph_sun_time_info);
+                shadow_Graph_shadow_time_info=(TextView) findViewById(R.id. shadow_Graph_shadow_time_info);
+                shadow_Graph_sun_time_info.setText("Full sun time : "+fullsun_time);
+                shadow_Graph_shadow_time_info.setText("Shadow time : "+shadow_time);
+
+
             }
 
             public String convertStreamToString(InputStream inputStream) throws IOException {
@@ -295,10 +343,15 @@ public class informationActivity extends FragmentActivity {
 
             int numValues = 24;
 
+
+
+
+
             Line line;
            // List<PointValue> values;
             List<Line> lines = new ArrayList<Line>();
 
+//////////////////////////////////shadow graph draw/////////////////////////////////////////////////////
             List<PointValue> values = new ArrayList<PointValue>();
             //Log.d("testgggg", String.valueOf(azimuthArray.get(1)));
             for(int i=0; i<shadow_azimuthArray.size(); ++i) {
@@ -317,48 +370,70 @@ public class informationActivity extends FragmentActivity {
 
 
 
-            // Tempo line is a little tricky because worse tempo means bigger value for example 11min per km is worse
-            // than 2min per km but the second should be higher on the chart. So you need to know max tempo and
-            // tempoRange and set
-            // chart values to minTempo - realTempo.
+///////////////////////////////////////sunpath graph draw//////////////////////////////////////////////////
 
-           /* values = new ArrayList<PointValue>();
-            for (int i = 0; i < numValues; ++i) {
-                // Some random raw tempo values.
-                float realTempo = (float) 76;
-                float revertedTempo = tempoRange - realTempo;
-                values.add(new PointValue(i, revertedTempo));
-            }*/
 
-            List<PointValue> values_ = new ArrayList<PointValue>();
+            List<PointValue> values__ = new ArrayList<PointValue>();
             //Log.d("testgggg", String.valueOf(azimuthArray.get(1)));
             for(int i=0; i<sunpath_azimuthArray.size(); ++i) {
                 //Log.d("test", String.valueOf(degreeArray_sunpath.get(i)));
                // Log.d("test2", String.valueOf(azimuthArray_sunpath.get(i)));
                // Log.d("d", String.valueOf(azimuthArray_sunpath.get(i)));
-                values_.add(new PointValue(sunpath_azimuthArray.get(i), sunpath_degreeArray.get(i)));
+                values__.add(new PointValue(sunpath_azimuthArray.get(i), sunpath_degreeArray.get(i)));
             }
 
 
 
-            line = new Line(values_);
+            line = new Line(values__);
             line.setColor(ChartUtils.COLOR_RED);
             line.setHasPoints(false);
-            line.setStrokeWidth(1);
+            line.setStrokeWidth(2);
             lines.add(line);
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+            int cross_num=Integer.parseInt(fullsun_azimuth);
+            int cross_num2=Integer.parseInt(shadow_azimuth);
+
+
+            for(int j=0; j<2; j++) {
+                List<PointValue> values_ = new ArrayList<PointValue>();
+                //Log.d("testgggg", String.valueOf(azimuthArray.get(1)));
+                int n = 0;
+                for (int i = 0; i < sunpath_azimuthArray.size(); ++i) {
+                    if(j==0)
+                        values_.add(new PointValue(cross_num, n++));
+                    else if(j==1)
+                        values_.add(new PointValue(cross_num2, n++));
+
+                    if (n + 1 > maxHeight)
+                        break;
+                }
+
+                line = new Line(values_);
+                line.setColor(getResources().getColor(R.color.my_black));
+                line.setHasPoints(false);
+                line.setStrokeWidth(3);
+                lines.add(line);
+            }
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
             //////////////////////////////////////////////////////////////////
             // Data and axes
             data = new LineChartData(lines);
 
-            // Distance axis(bottom X) with formatter that will ad [km] to values, remember to modify max label charts
-            // value.
             Axis distanceAxis = new Axis();
             distanceAxis.setName("Azimuth");
             distanceAxis.setTextColor(Color.BLACK);
             distanceAxis.setMaxLabelChars(3);
             distanceAxis.setFormatter(new SimpleAxisValueFormatter().setAppendedText(".".toCharArray()));
+           // distanceAxis.setFormatter(new SimpleAxisValueFormatter().formatValueForManualAxis(""));
             distanceAxis.setHasLines(true);
             distanceAxis.setHasTiltedLabels(true);
             data.setAxisXBottom(distanceAxis);
@@ -395,6 +470,10 @@ public class informationActivity extends FragmentActivity {
             chart.setMaximumViewport(v);
             chart.setCurrentViewport(v);
 
+
+
+
+
         }
 
         private String formatMinutes(float value) {
@@ -417,7 +496,7 @@ public class informationActivity extends FragmentActivity {
          * Recalculated height values to display on axis. For this example I use auto-generated height axis so I
          * override only formatAutoValue method.
          */
-        private static class HeightValueFormatter extends SimpleAxisValueFormatter {
+        private class HeightValueFormatter extends SimpleAxisValueFormatter {
 
             private float scale;
             private float sub;

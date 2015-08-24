@@ -7,24 +7,60 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:weightSum="100">
 
+    <TextView
+        android:id="@+id/shadow_Graph_Top_Title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        android:text="title"
+        android:textSize="20sp"
+        android:textColor="@color/my_black"
+        android:gravity="center"
+        ></TextView>
+
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="90"
+        android:layout_weight="87.48"
         tools:context="lecho.lib.hellocharts.samples.TempoChartActivity"
         tools:ignore="MergeRootFrame" />
 
-    <TextView
-        android:id="@+id/graphText"
-        android:textColor="@android:color/black"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/divide"
+        android:orientation="horizontal"
         android:layout_height="0dp"
-        android:layout_weight="10"
-        android:gravity="center"
-        android:text="Unive"
-        android:textStyle="normal"
-        android:textSize="25sp" />
+        android:layout_weight="8.12"
+        android:layout_width="match_parent"
+        >
+
+        <TextView
+            android:id="@+id/shadow_Graph_sun_time_info"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:textColor="@color/my_black"
+            android:text=""
+            android:textSize="15sp"
+            android:gravity="center"
+            android:layout_marginBottom="5dp"
+            android:paddingBottom="5dp"
+            ></TextView>
+        <TextView
+            android:id="@+id/shadow_Graph_shadow_time_info"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="50"
+            android:textColor="@color/my_black"
+            android:text=""
+            android:textSize="15sp"
+            android:gravity="center"
+            android:layout_marginBottom="5dp"
+            android:paddingBottom="5dp"
+            ></TextView>
+
+
+    </LinearLayout>
 
 </LinearLayout>
